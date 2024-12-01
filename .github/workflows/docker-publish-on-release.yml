@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        shopware_version: [6.6.0, latest]
+        shopware_version: [6.4.0.0, latest]
 
     steps:
       - name: Checkout repository
@@ -37,6 +37,7 @@ jobs:
               cd /var/www/html/custom/plugins/adyen-shopware6
               ./bin/build.sh
             "
+
 
       - name: Push Docker Image for Shopware ${{ matrix.shopware_version }}
         uses: docker/build-push-action@v4
