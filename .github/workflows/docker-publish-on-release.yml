@@ -16,6 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Fetch current release details
+      - name: Get Release Tag
+        id: release
+        run: echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -30,6 +35,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/adyen-shopware6:${{ matrix.shopware_version }}
+            ghcr.io/${{ github.repository_owner }}/adyen-shopware6:${{ matrix.shopware_version }}-${{ env.RELEASE_TAG }}
           build-args: |
             SHOPWARE_TAG=${{ matrix.shopware_version }}
+            RELEASE_TAG=${{ env.RELEASE_TAG }}
