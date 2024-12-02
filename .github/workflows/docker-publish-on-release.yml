@@ -28,7 +28,7 @@ jobs:
         id: set-matrix
         run: |
           echo "Creating dynamic matrix..."
-          matrix_json=$(jq -n \
+          matrix_json=$(jq -c -n \
             --arg shopware_v1 "6.4.0.0" \
             --arg shopware_v2 "$NEWEST_DOCKWARE_TAG" \
             '{
@@ -37,18 +37,16 @@ jobs:
                 {shopware_version: $shopware_v2}
               ]
             }')
-          echo "$matrix_json" > matrix.json
           echo "matrix=$matrix_json" >> $GITHUB_ENV
           echo "Generated matrix: $matrix_json"
         env:
           NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
 
       # Step 3: Validate Matrix
-      - name: Debug Generated Matrix
+      - name: Validate Generated Matrix
         run: |
           echo "Validating generated matrix..."
-          cat matrix.json
-          jq . matrix.json
+          echo "${{ env.matrix }}" | jq .
 
   build-plugin:
     needs: prepare-matrix
