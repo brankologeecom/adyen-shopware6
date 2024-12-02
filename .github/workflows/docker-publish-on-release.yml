@@ -23,21 +23,21 @@ jobs:
           echo "NEWEST_DOCKWARE_TAG=$newest_tag" >> $GITHUB_ENV
           echo "Newest Shopware tag is: $newest_tag"
 
-      # Step 2: Create Matrix
       - name: Create Dynamic Matrix
         id: set-matrix
         run: |
-          matrix=$(cat <<EOF
-          {
-            "include": [
-              {"shopware_version": "6.4.0.0"},
-              {"shopware_version": "$NEWEST_DOCKWARE_TAG"}
-            ]
-          }
-          EOF
-          )
-          echo "$matrix" > matrix.json
-          echo "matrix=$matrix" >> $GITHUB_ENV
+          echo "Creating dynamic matrix..."
+          matrix_json=$(jq -n \
+            --arg shopware_v1 "6.4.0.0" \
+            --arg shopware_v2 "${NEWEST_DOCKWARE_TAG}" \
+            '{
+              include: [
+                {shopware_version: $shopware_v1},
+                {shopware_version: $shopware_v2}
+              ]
+            }')
+          echo "$matrix_json" > matrix.json
+          echo "matrix=$matrix_json" >> $GITHUB_ENV
         env:
           NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
 
