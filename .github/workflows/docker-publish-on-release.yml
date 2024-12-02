@@ -9,7 +9,7 @@ jobs:
   prepare-matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ env.MATRIX }}
     steps:
       # Step 1: Fetch the newest Shopware version from Dockware
       - name: Fetch Newest Shopware Version
@@ -37,7 +37,7 @@ jobs:
                 {shopware_version: $shopware_v2}
               ]
             }')
-          echo "::set-output name=matrix::$matrix_json"
+          echo "MATRIX=$matrix_json" >> $GITHUB_ENV
           echo "Generated matrix: $matrix_json"
         env:
           NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
@@ -46,24 +46,18 @@ jobs:
     needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+      matrix: ${{ fromJson(env.MATRIX) }}
     steps:
-      # Step 3: Validate Generated Matrix
-      - name: Validate Generated Matrix
-        run: |
-          echo "Validating generated matrix..."
-          echo "${{ needs.prepare-matrix.outputs.matrix }}" | jq .
-
-      # Step 4: Checkout repository
+      # Step 3: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 5: Fetch Release Tag
+      # Step 4: Fetch Release Tag
       - name: Get Release Tag
         id: release
         run: echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-      # Step 6: Log in to GitHub Container Registry
+      # Step 5: Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -71,7 +65,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 7: Build and Push Docker Image
+      # Step 6: Build and Push Docker Image
       - name: Push Docker Image for Shopware ${{ matrix.shopware_version }}
         uses: docker/build-push-action@v4
         with:
