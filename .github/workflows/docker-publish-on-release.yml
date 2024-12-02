@@ -27,11 +27,19 @@ jobs:
       - name: Create Dynamic Matrix
         id: set-matrix
         run: |
-          echo '{"include":[
-            {"shopware_version":"6.4.0.0"},
-            {"shopware_version":"'"${{ env.NEWEST_DOCKWARE_TAG }}"'"}
-          ]}' > matrix.json
-          echo "::set-output name=matrix::$(cat matrix.json)"
+          matrix=$(cat <<EOF
+          {
+            "include": [
+              {"shopware_version": "6.4.0.0"},
+              {"shopware_version": "$NEWEST_DOCKWARE_TAG"}
+            ]
+          }
+          EOF
+          )
+          echo "$matrix" > matrix.json
+          echo "matrix=$matrix" >> $GITHUB_ENV
+        env:
+          NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
 
   build-plugin:
     needs: prepare-matrix
