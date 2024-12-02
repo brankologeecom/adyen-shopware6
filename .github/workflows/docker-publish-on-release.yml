@@ -36,9 +36,9 @@ jobs:
                 {shopware_version: $shopware_v1},
                 {shopware_version: $shopware_v2}
               ]
-            }')
-          echo "$matrix_json" > matrix.json
+            }' | tr -d '\n')
           echo "matrix=$matrix_json" >> $GITHUB_ENV
+          echo "Generated matrix: $matrix_json"
         env:
           NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
 
@@ -46,7 +46,7 @@ jobs:
       - name: Validate Generated Matrix
         run: |
           echo "Validating generated matrix..."
-          cat matrix.json | jq .
+          echo "${{ env.matrix }}" | jq .
 
   build-plugin:
     needs: prepare-matrix
