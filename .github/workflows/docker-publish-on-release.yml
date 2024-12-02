@@ -6,21 +6,49 @@ on:
       - published
 
 jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      # Step 1: Fetch the newest Shopware version from Dockware
+      - name: Fetch Newest Shopware Version
+        id: fetch-newest-version
+        run: |
+          newest_tag=$(curl -s "https://hub.docker.com/v2/repositories/dockware/play/tags?page_size=100" | \
+            jq -r '.results[].name' | \
+            grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V | \
+            tail -n 1)
+          echo "NEWEST_DOCKWARE_TAG=$newest_tag" >> $GITHUB_ENV
+          echo "Newest Shopware tag is: $newest_tag"
+
+      # Step 2: Create Matrix
+      - name: Create Dynamic Matrix
+        id: set-matrix
+        run: |
+          echo '{"include":[
+            {"shopware_version":"6.4.0.0"},
+            {"shopware_version":"'"${{ env.NEWEST_DOCKWARE_TAG }}"'"}
+          ]}' > matrix.json
+          echo "::set-output name=matrix::$(cat matrix.json)"
+
   build-plugin:
+    needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        shopware_version: [6.4.0.0, latest]
-
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
     steps:
-      - name: Checkout repository
+      # Step 3: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Fetch current release details
+      # Step 4: Fetch Release Tag
       - name: Get Release Tag
         id: release
         run: echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
+      # Step 5: Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -28,6 +56,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 6: Build and Push Docker Image
       - name: Push Docker Image for Shopware ${{ matrix.shopware_version }}
         uses: docker/build-push-action@v4
         with:
