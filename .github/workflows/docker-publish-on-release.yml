@@ -37,16 +37,10 @@ jobs:
                 {shopware_version: $shopware_v2}
               ]
             }')
-          echo "matrix=$matrix_json" >> $GITHUB_ENV
+          echo "::set-output name=matrix::$matrix_json"
           echo "Generated matrix: $matrix_json"
         env:
           NEWEST_DOCKWARE_TAG: ${{ env.NEWEST_DOCKWARE_TAG }}
-
-      # Step 3: Validate Matrix
-      - name: Validate Generated Matrix
-        run: |
-          echo "Validating generated matrix..."
-          echo "${{ env.matrix }}" | jq .
 
   build-plugin:
     needs: prepare-matrix
@@ -54,6 +48,12 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
     steps:
+      # Step 3: Validate Generated Matrix
+      - name: Validate Generated Matrix
+        run: |
+          echo "Validating generated matrix..."
+          echo "${{ needs.prepare-matrix.outputs.matrix }}" | jq .
+
       # Step 4: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v3
