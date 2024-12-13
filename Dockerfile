@@ -1,7 +1,7 @@
 # Define build-time arguments
 ARG SHOPWARE_TAG=latest
 ARG RELEASE_TAG=latest
-
+ENV RELEASE_TAG=${RELEASE_TAG}
 # Base image
 FROM dockware/play:${SHOPWARE_TAG}
 
