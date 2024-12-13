@@ -5,6 +5,7 @@ ARG RELEASE_TAG=latest
 # Base image
 FROM dockware/play:${SHOPWARE_TAG}
 
+USER root
 # Set the working directory
 WORKDIR /var/www/html
 
