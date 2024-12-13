@@ -1,12 +1,33 @@
-name: Build Adyen Plugin on Release
-
 on:
   release:
-    types:
-      - published
+    types: [published]
+
+name: Upload Shopware 6 Marketplace asset
 
 jobs:
+  run:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2+'
+
+      - name: Prepare release artifact
+        run: .github/workflows/scripts/prepare-release-asset.sh
+
+      - name:  Upload asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} AdyenPaymentShopware6.zip --clobber
+
   prepare-matrix:
+    needs: run
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
