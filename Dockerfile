@@ -2,7 +2,7 @@
 ARG SHOPWARE_TAG=latest
 ARG RELEASE_TAG=latest
 FROM dockware/play:${SHOPWARE_TAG}
-
+USER root
 WORKDIR /var/www/html
 
 # Install required tools
