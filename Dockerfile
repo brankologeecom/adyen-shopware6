@@ -1,25 +1,33 @@
-# Define build-time arguments
+# Define the image that will be used as a base image
 ARG SHOPWARE_TAG=latest
 ARG RELEASE_TAG=latest
-ENV RELEASE_TAG=${RELEASE_TAG}
-# Base image
 FROM dockware/play:${SHOPWARE_TAG}
 
-USER root
-# Set the working directory
 WORKDIR /var/www/html
 
-# Install required tools and download the Adyen plugin
-RUN apt-get update && apt-get install -y --no-install-recommends curl unzip && \
-    echo "Using RELEASE_TAG=${RELEASE_TAG}" && \
-    curl -f -L -o adyen-plugin.zip "https://github.com/Adyen/adyen-shopware6/releases/download/${RELEASE_TAG}/AdyenPaymentShopware6.zip" && \
-    unzip adyen-plugin.zip && \
-    mv adyen-shopware6-* custom/plugins/AdyenPaymentShopware6 && \
-    rm adyen-plugin.zip && \
-    rm -rf /var/lib/apt/lists/*
+# Install required tools
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip
 
-# Ensure proper permissions
-RUN chmod -R 755 /var/www/html
+# Check if RELEASE_TAG is set
+RUN echo "Using RELEASE_TAG=${RELEASE_TAG}" && \
+    if [ -z "${RELEASE_TAG}" ]; then echo "RELEASE_TAG is not set!"; exit 1; fi
 
-# Set the working directory again (optional, as it's already set)
+# Download the Adyen plugin
+RUN curl -f -L -o adyen-plugin.zip "https://github.com/Adyen/adyen-shopware6/archive/refs/tags/${RELEASE_TAG}.zip"
+
+# Extract the plugin and move it to the desired location
+RUN unzip adyen-plugin.zip && mv adyen-shopware6-* custom/plugins/AdyenPaymentShopware6
+
+# Clean up temporary files
+RUN rm adyen-plugin.zip && rm -rf /var/lib/apt/lists/*
+
+
+# Fix permissions and update the system
+USER root
+RUN rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/lib/apt/lists/partial && \
+    chmod -R 777 /var/lib/apt/lists && \
+    apt-get update && apt-get install -y curl unzip
+
+# Set the working directory
 WORKDIR /var/www/html
