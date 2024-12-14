@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.48.2-focal
+    networks:
+      - localnetwork
+    shm_size: 1gb
+    ipc: host
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - INTEGRATION_TESTS_BRANCH
+      - SHOPWARE_BASE_URL
+      - PAYPAL_USERNAME
+      - PAYPAL_PASSWORD
+    volumes:
+      - ../scripts/e2e.sh:/e2e.sh
+      - ../tmp/:/tmp/
+      - ../../../test-report:/tmp/test-report
+
+networks:
+  localnetwork:
+    external: true
