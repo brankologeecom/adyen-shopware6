@@ -14,11 +14,11 @@ jobs:
       group: larger-runners
       labels: ubuntu-latest-8-cores
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-    # if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
-    if: false
-    # Prevent bots from initiating E2E pipeline
+    #    strategy:
+    #      fail-fast: false
+    #    # if: ${{ github.actor != 'renovate[bot]' || github.actor != 'lgtm-com[bot]' }}
+    #    if: false
+    #    # Prevent bots from initiating E2E pipeline
     steps:
       - name: Clone Code
         uses: actions/checkout@v2
