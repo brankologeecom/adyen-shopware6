@@ -3,8 +3,9 @@ name: E2E Test
 run-name: Headless E2E tests for Adyen Shopware Plugin
 
 on:
-  pull_request:
-  workflow_dispatch:
+  push:
+    branches:
+      - develop
 
 jobs:
   e2e:
