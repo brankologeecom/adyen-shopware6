@@ -49,18 +49,18 @@ const config = {
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: "chromium",
-    //
-    //   /* Project-specific settings. */
-    //   use: {
-    //     ...devices["Desktop Chrome"],
-    //     viewport: {
-    //       width: VIEWPORT_WIDTH,
-    //       height: VIEWPORT_HEIGHT,
-    //     },
-    //   },
-    // },
+    {
+      name: "chromium",
+
+      /* Project-specific settings. */
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: {
+          width: VIEWPORT_WIDTH,
+          height: VIEWPORT_HEIGHT,
+        },
+      },
+    },
 
     {
       name: "firefox",
