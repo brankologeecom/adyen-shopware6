@@ -1,7 +1,7 @@
 version: '3'
 services:
   playwright:
-    image: mcr.microsoft.com/playwright:v1.48.2-focal
+    image: mcr.microsoft.com/playwright:v1.48.1
     networks:
       - localnetwork
     shm_size: 1gb
@@ -9,7 +9,6 @@ services:
     cap_add:
       - SYS_ADMIN
     environment:
-      - INTEGRATION_TESTS_BRANCH
       - SHOPWARE_BASE_URL
       - PAYPAL_USERNAME
       - PAYPAL_PASSWORD
