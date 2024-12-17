@@ -14,7 +14,7 @@ services:
       - PAYPAL_PASSWORD
     volumes:
       - ../scripts/e2e.sh:/e2e.sh
-      - ../tmp/:/tmp/
+      - ../e2e/:/tmp/
       - ../../../test-report:/tmp/test-report
 
 networks:
