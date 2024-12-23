@@ -65,3 +65,18 @@ jobs:
         with:
           name: html-report
           path: test-report
+      - name: Copy Logs from Container
+        if: always()
+        run: |
+          # Create a local directory for logs
+          mkdir -p logs
+
+          # Copy logs from Shopware container to the host
+          docker cp shopware6:~/html/var/log/adyen/api.log logs
+
+      - name: Upload Adyen api Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: adyen-api-logs
+          path: logs/api.log
