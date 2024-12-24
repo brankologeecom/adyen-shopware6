@@ -5,7 +5,6 @@ FROM dockware/play:${SHOPWARE_TAG}
 
 ARG RELEASE_TAG=latest
 
-USER root
 WORKDIR /var/www/html
 
 # Install required tools
@@ -23,14 +22,6 @@ RUN unzip adyen-plugin.zip && mv AdyenPaymentShopware6 custom/plugins/AdyenPayme
 
 # Clean up temporary files
 RUN rm adyen-plugin.zip && rm -rf /var/lib/apt/lists/*
-
-
-# Fix permissions and update the system
-USER root
-RUN rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /var/lib/apt/lists/partial && \
-    chmod -R 777 /var/lib/apt/lists && \
-    apt-get update && apt-get install -y curl unzip
 
 # Set the working directory
 WORKDIR /var/www/html
