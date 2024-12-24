@@ -26,8 +26,6 @@ RUN rm adyen-plugin.zip && rm -rf /var/lib/apt/lists/*
 
 
 # Fix permissions and update the system
-RUN rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /var/lib/apt/lists/partial && \
-    chmod -R 777 /var/lib/apt/lists
+RUN rm -rf /var/lib/apt/lists/*
 
 USER dockware
